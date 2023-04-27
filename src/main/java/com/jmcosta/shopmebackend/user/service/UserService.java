@@ -5,6 +5,7 @@ import com.jmcosta.shopmebackend.roles.repository.RoleRepository;
 import com.jmcosta.shopmebackend.user.entity.User;
 import com.jmcosta.shopmebackend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public class UserService {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public List<User> findAll() {
         return (List<User>) userRepository.findAll();
     }
@@ -27,6 +31,7 @@ public class UserService {
     }
 
     public void save(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 }
