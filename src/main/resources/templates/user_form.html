@@ -4,9 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width; initial-scale=1.0, minimum-scale=1.0">
     <title>Create a new user</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
 </head>
 <body>
 <div class="container-fluid">
@@ -63,7 +61,7 @@
     </div>
 
     <form th:action="@{/users/save}" method="post"
-          th:object="${user}">
+          th:object="${user}" onsubmit="return checkEmailUnique(this)">
         <div class="container border border-secondary rounded p-3">
             <div class="row mb-3">
                 <label class="col-sm-4 col-form-label">E-mail</label>
@@ -101,7 +99,8 @@
                 <label class="col-sm-4 col-form-label">Roles</label>
                 <div class="col-sm-8">
                     <th:block th:each="role : ${roles}">
-                        <input class="m-2" type="checkbox" th:field="*{roles}" th:text="${role.name}" th:value="${role.id}">
+                        <input class="m-2" type="checkbox" th:field="*{roles}" th:text="${role.name}"
+                               th:value="${role.id}">
                         - <small>[[${role.description}]]</small>
                         <br/>
                     </th:block>
@@ -122,10 +121,32 @@
         </div>
     </form>
 
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalTitle"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="modalBody"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div>
         <p>Control Panel -Copyright &copy; JMCOSTA</p>
     </div>
 </div>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -133,5 +154,27 @@
             window.location = "[[@{/users}]]"
         });
     });
+
+    function checkEmailUnique(form) {
+        url = "[[@{/users/check_email}]]";
+        userEmail = $("#email").val();
+        csrf = $("input[name='_csrf']").val();
+        params = {email: userEmail, _csrf: csrf};
+        $.post(url, params, function (response) {
+            if (response === "OK") {
+                form.submit();
+            } else if (response === "Duplicated") {
+                showModalDialog("Warning", "There is another user with email: " + userEmail)
+            }
+        })
+        return false;
+    }
+
+    function showModalDialog(title, message) {
+        myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        $("#modalTitle").text(title);
+        $("#modalBody").text(message);
+        myModal.toggle();
+    }
 </script>
 </html>

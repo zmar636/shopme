@@ -3,11 +3,15 @@ package com.jmcosta.shopmebackend;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Testcontainers
 public class AbstractContainerBaseTest {
 
     private static final String IMAGE_VERSION = "mysql:latest";
 
+    @Container
     static final MySQLContainer MY_SQL_CONTAINER;
 
     static {
