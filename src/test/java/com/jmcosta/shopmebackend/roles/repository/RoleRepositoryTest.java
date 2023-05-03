@@ -1,29 +1,28 @@
 package com.jmcosta.shopmebackend.roles.repository;
 
+import com.jmcosta.shopmebackend.AbstractContainerBaseTest;
 import com.jmcosta.shopmebackend.roles.entity.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // deactivate the default behaviour
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Rollback(false)
-class RoleRepositoryTest {
-
+class RoleRepositoryTest extends AbstractContainerBaseTest {
     @Autowired
     RoleRepository repository;
 
     @Test
     public void testCreateFirstRole() {
         Role admin = new Role("Admin", "Manage everything");
-        Role savedRole = repository.save(admin);
-        assertThat(savedRole.getId()).isGreaterThan(0);
+        Role role = repository.save(admin);
+
+        assertTrue(repository.findById(role.getId()).isPresent());
     }
 
     @Test
