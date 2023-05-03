@@ -165,7 +165,11 @@
                 form.submit();
             } else if (response === "Duplicated") {
                 showModalDialog("Warning", "There is another user with email: " + userEmail)
+            } else {
+                showModalDialog("Error", "Unknown response from server");
             }
+        }).fail(function () {
+            showModalDialog("Error", "Could not connect to the server");
         })
         return false;
     }
