@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width; initial-scale=1.0, minimum-scale=1.0">
     <title>Users page</title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
     <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </head>
@@ -78,17 +80,29 @@
                 <th>Last Name</th>
                 <th>Roles</th>
                 <th>Enabled</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
                 <tr th:each="user : ${listUsers}">
                 <td>[[${user.id}]]</td>
-                <td>[[${user.photos}]]</td>
+                <td>
+                    <i class="fa-solid fa-image-portrait fa-3x icon-silver"></i>
+                </td>
                 <td>[[${user.email}]]</td>
                 <td>[[${user.firstName}]]</td>
                 <td>[[${user.lastName}]]</td>
                 <td>[[${user.roles}]]</td>
                 <td>[[${user.enabled}]]</td>
+                <td>
+                    <a href="#">
+                        <i class="fa-solid fa-pen-to-square fa-2x icon-green"></i>
+                    </a>
+                    &nbsp;
+                    <a href="#">
+                        <i class="fa-solid fa-trash fa-2x icon-dark"></i>
+                    </a>
+                </td>
             </tr>
             </tbody>
         </table>
