@@ -3,6 +3,7 @@ package com.jmcosta.shopmebackend.user.service;
 import com.jmcosta.shopmebackend.roles.entity.Role;
 import com.jmcosta.shopmebackend.roles.repository.RoleRepository;
 import com.jmcosta.shopmebackend.user.entity.User;
+import com.jmcosta.shopmebackend.user.exception.UserNotFoundException;
 import com.jmcosta.shopmebackend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,5 +39,13 @@ public class UserService {
     public boolean isEmailUnique(String email) {
         User userByEmail = userRepository.getUserByEmail(email);
         return userByEmail == null;
+    }
+
+    public User getById(Integer id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new UserNotFoundException("User with id: \"" + id +  "\" was not found")
+                );
     }
 }
