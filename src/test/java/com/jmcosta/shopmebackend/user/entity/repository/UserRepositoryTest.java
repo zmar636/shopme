@@ -14,6 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // deactivate the default behaviour
 @DataJpaTest
@@ -35,7 +37,7 @@ public class UserRepositoryTest extends AbstractContainerBaseTest {
 
         userRepository.save(user);
         User savedUser = userRepository.getUserByEmail("test@gmail.com");
-        Assertions.assertEquals(savedUser.getEmail(), user.getEmail());
+        assertEquals(savedUser.getEmail(), user.getEmail());
     }
 
     @Test
@@ -53,12 +55,26 @@ public class UserRepositoryTest extends AbstractContainerBaseTest {
 
         User savedUser = userRepository.getUserByEmail("testWithOneRole@gmail.com");
         List<Role> roles = savedUser.getRoles().stream().toList();
-        Assertions.assertEquals(roles.get(0).getName(), "Admin");
+        assertEquals(roles.get(0).getName(), "Admin");
     }
 
     @Test
     public void givenUserDoesNotExist_whenGetUserByEmail_thenUserIsNull() {
         User user = userRepository.getUserByEmail("notExists@gmail.com");
         Assertions.assertNull(user);
+    }
+
+    @Test
+    public void givenOneUser_whenCountById_thenReturnOne() {
+        User user = new User(
+                "test@email.com",
+                "test",
+                "test",
+                "test"
+        );
+
+        User userWithId = userRepository.save(user);
+        Long count = userRepository.countById(userWithId.getId());
+        assertEquals(1, count);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -32,20 +33,55 @@ public class UserService {
     }
 
     public void save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        boolean isUpdate = user.getId() != null;
+
+        if (isUpdate) {
+            User currentUser = userRepository
+                    .findById(user.getId())
+                    .orElseThrow(() -> new UserNotFoundException("User with id \"" + user.getId() + "\" was not found"));
+
+            if (user.getPassword().isEmpty()) {
+                user.setPassword(currentUser.getPassword());
+            } else {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         userRepository.save(user);
     }
 
-    public boolean isEmailUnique(String email) {
+    public void delete(Integer id) {
+
+        Long count = userRepository.countById(id);
+
+        if(count == 0) {
+            throw new UserNotFoundException("User with id: \"" + id + "\" was not found");
+        }
+
+        userRepository.deleteById(id);
+    }
+
+    public boolean isEmailUnique(Integer id, String email) {
         User userByEmail = userRepository.getUserByEmail(email);
-        return userByEmail == null;
+
+        if (userByEmail == null) return true;
+
+        boolean isCreatingNew = id == null;
+
+        if (isCreatingNew) {
+            return false;
+        } else {
+            return Objects.equals(userByEmail.getId(), id);
+        }
     }
 
     public User getById(Integer id) {
         return userRepository
                 .findById(id)
                 .orElseThrow(
-                        () -> new UserNotFoundException("User with id: \"" + id +  "\" was not found")
+                        () -> new UserNotFoundException("User with id: \"" + id + "\" was not found")
                 );
     }
 }
