@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // deactivate the default behaviour
@@ -76,5 +77,22 @@ public class UserRepositoryTest extends AbstractContainerBaseTest {
         User userWithId = userRepository.save(user);
         Long count = userRepository.countById(userWithId.getId());
         assertEquals(1, count);
+    }
+
+    @Test
+    public void givenUserIsDisabled_whenUpdateEnabled_thenUserIsEnabled(){
+        User user = new User(
+                "test@email.com",
+                "test",
+                "test",
+                "test"
+        );
+        user.setEnabled(false);
+
+        userRepository.save(user);
+        User persistedUser = userRepository.getUserByEmail("test@email.com");
+        userRepository.updateEnableStatus(persistedUser.getId(), true);
+        User persistedUser2 = userRepository.getUserByEmail("test@email.com");
+        assertTrue(persistedUser.isEnabled(), "User is enabled");
     }
 }

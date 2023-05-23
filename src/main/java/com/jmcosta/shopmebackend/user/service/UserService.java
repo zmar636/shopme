@@ -8,11 +8,13 @@ import com.jmcosta.shopmebackend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -83,5 +85,9 @@ public class UserService {
                 .orElseThrow(
                         () -> new UserNotFoundException("User with id: \"" + id + "\" was not found")
                 );
+    }
+
+    public void updateEnableStatus(Integer id, boolean enabled) {
+        userRepository.updateEnableStatus(id, enabled);
     }
 }
